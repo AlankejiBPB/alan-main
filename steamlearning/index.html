@@ -418,7 +418,7 @@
     <h1 class="fade-in d1">欢迎进入 Steam 学习中心</h1>
 
     <p class="subtitle fade-in d2">
-      在这里完成 <strong>插件安装</strong> 与 <strong>内核配置</strong>，开启实验性能力，获得更顺畅的浏览体验。
+      在这里完成 <strong>插件安装</strong> 与 <strong>内核配置</strong>，开启实验性功能，获得更顺畅的浏览体验。
     </p>
 
     <div class="actions">
@@ -431,7 +431,7 @@
           </svg>
         </span>
         <span class="action-title">安装插件</span>
-        <p class="action-desc">前往 Chrome 插件中心获取并安装扩展。</p>
+        <p class="action-desc">前往插件中心获取并安装 Steam 客户端扩展</p>
         <span class="action-note">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="9"/>
@@ -453,8 +453,8 @@
           </svg>
         </span>
         <span class="action-title">内核设置</span>
-        <p class="action-desc">打开浏览器设置，调整内核与基础参数。</p>
-        <span class="action-arrow">点击复制地址，粘贴到地址栏访问
+        <p class="action-desc">打开 SteamWebHelper 内核设置调整权限与隐私设置</p>
+        <span class="action-arrow">点击复制地址
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
         </span>
       </a>
@@ -468,8 +468,8 @@
           </svg>
         </span>
         <span class="action-title">实验性功能</span>
-        <p class="action-desc">进入 flags 页面，体验尚未正式发布的能力。</p>
-        <span class="action-arrow">点击复制地址，粘贴到地址栏访问
+        <p class="action-desc">解锁内核级隐藏功能</p>
+        <span class="action-arrow">点击复制地址
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
         </span>
       </a>
@@ -558,7 +558,7 @@
           copyText(url, function (ok) {
             showToast(
               (ok ? '已复制 <b>' + url + '</b>' : '请手动复制 <b>' + url + '</b>') +
-              '，粘贴到 Chrome 地址栏回车即可打开（浏览器禁止网页直接跳转 chrome:// 地址）'
+              '，粘贴到上方地址栏回车即可打开'
             );
           });
         }
