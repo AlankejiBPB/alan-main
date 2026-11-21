@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Steam 学习中心</title>
+<style>
+  :root{
+    --bg-top:#171a21;
+    --bg-bottom:#1b2838;
+    --primary:#66c0f4;
+    --accent-a:#a4d007;
+    --accent-b:#588a1b;
+    --text:#c6d4df;
+    --text-dim:#8f98a0;
+    --card-bg:rgba(27,40,56,.62);
+    --card-border:rgba(102,192,244,.25);
+    --card-border-hover:rgba(102,192,244,.85);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{ height:100%; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:48px 24px;
+    font-family:"Motiva Sans","Segoe UI","Microsoft YaHei",sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(900px 520px at 18% -10%, rgba(102,192,244,.20), transparent 62%),
+      radial-gradient(760px 480px at 88% 8%, rgba(164,208,7,.10), transparent 60%),
+      radial-gradient(1000px 620px at 50% 112%, rgba(88,138,27,.14), transparent 65%),
+      linear-gradient(160deg,#171a21,#1b2838);
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* 顶部细光带装饰 */
+  body::before{
+    content:"";
+    position:fixed;
+    top:0; left:0; right:0;
+    height:2px;
+    background:linear-gradient(90deg,transparent,rgba(102,192,244,.75),rgba(164,208,7,.55),transparent);
+    opacity:.75;
+    pointer-events:none;
+  }
+
+  /* 细微网格纹理 */
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(102,192,244,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(102,192,244,.045) 1px, transparent 1px);
+    background-size:64px 64px;
+    -webkit-mask-image:radial-gradient(circle at 50% 40%, #000 0%, transparent 78%);
+            mask-image:radial-gradient(circle at 50% 40%, #000 0%, transparent 78%);
+    pointer-events:none;
+  }
+
+  .stage{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:1000px;
+    text-align:center;
+  }
+
+  /* 入场动画 */
+  .fade-in{
+    opacity:0;
+    transform:translateY(14px);
+    animation:fadeUp 200ms ease-out forwards;
+  }
+  .d1{ animation-delay:0ms; }
+  .d2{ animation-delay:70ms; }
+  .d3{ animation-delay:140ms; }
+  .d4{ animation-delay:210ms; }
+
+  @keyframes fadeUp{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  /* 眉标 */
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 14px;
+    margin-bottom:22px;
+    border:1px solid rgba(102,192,244,.22);
+    border-radius:999px;
+    background:rgba(23,26,33,.55);
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+  }
+  .eyebrow .dot{
+    width:6px; height:6px;
+    border-radius:50%;
+    background:var(--accent-a);
+    box-shadow:0 0 8px rgba(164,208,7,.85);
+  }
+
+  h1{
+    margin:0 0 14px;
+    font-size:clamp(32px,5.4vw,56px);
+    line-height:1.18;
+    font-weight:800;
+    letter-spacing:.5px;
+    background:linear-gradient(120deg,#ffffff 0%,#cfe8f7 26%,var(--primary) 58%,#9ed0f0 78%,var(--accent-a) 100%);
+    -webkit-background-clip:text;
+            background-clip:text;
+    color:transparent;
+    text-shadow:0 0 42px rgba(102,192,244,.22);
+  }
+
+  .subtitle{
+    margin:0 auto 46px;
+    max-width:600px;
+    font-size:15px;
+    line-height:1.75;
+    color:var(--text-dim);
+  }
+  .subtitle strong{
+    color:var(--text);
+    font-weight:600;
+  }
+
+  /* 按钮组：宽屏三列 / 窄屏单列 */
+  .actions{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0,1fr));
+    gap:18px;
+    margin:0 auto;
+  }
+
+  .action-card{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    gap:10px;
+    padding:26px 20px 24px;
+    min-height:186px;
+    border-radius:12px;
+    border:1px solid var(--card-border);
+    background:linear-gradient(180deg, rgba(27,40,56,.78), rgba(23,26,33,.72));
+    box-shadow:
+      inset 0 1px 0 rgba(198,212,223,.06),
+      inset 0 -14px 28px rgba(0,0,0,.28),
+      0 10px 24px rgba(0,0,0,.32);
+    text-decoration:none;
+    color:var(--text);
+    overflow:hidden;
+    transition:
+      transform 200ms ease,
+      border-color 200ms ease,
+      box-shadow 200ms ease,
+      background 200ms ease;
+  }
+
+  /* 卡片顶部高光条 */
+  .action-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0;
+    height:2px;
+    background:linear-gradient(90deg,transparent,rgba(102,192,244,.55),transparent);
+    opacity:.55;
+    transition:opacity 200ms ease;
+  }
+
+  .action-card:hover,
+  .action-card:focus-visible{
+    transform:translateY(-3px);
+    border-color:var(--card-border-hover);
+    background:linear-gradient(180deg, rgba(35,52,72,.86), rgba(27,40,56,.82));
+    box-shadow:
+      inset 0 1px 0 rgba(198,212,223,.10),
+      inset 0 -14px 28px rgba(0,0,0,.26),
+      0 14px 30px rgba(0,0,0,.40),
+      0 0 0 1px rgba(102,192,244,.18),
+      0 0 26px rgba(102,192,244,.34),
+      0 0 54px rgba(102,192,244,.16);
+    outline:none;
+  }
+
+  .action-card:hover::before,
+  .action-card:focus-visible::before{
+    opacity:1;
+  }
+
+  .icon-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:52px;
+    height:52px;
+    border-radius:10px;
+    background:radial-gradient(circle at 50% 30%, rgba(102,192,244,.20), rgba(102,192,244,.05));
+    border:1px solid rgba(102,192,244,.20);
+    box-shadow:inset 0 0 18px rgba(102,192,244,.14);
+    transition:box-shadow 200ms ease, border-color 200ms ease;
+  }
+
+  .action-card:hover .icon-wrap,
+  .action-card:focus-visible .icon-wrap{
+    border-color:rgba(102,192,244,.55);
+    box-shadow:inset 0 0 20px rgba(102,192,244,.26), 0 0 16px rgba(102,192,244,.22);
+  }
+
+  .icon-wrap svg{
+    width:26px;
+    height:26px;
+    stroke:var(--primary);
+    fill:none;
+    stroke-width:1.7;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+
+  .action-title{
+    font-size:17px;
+    font-weight:700;
+    letter-spacing:.4px;
+    color:#e8f2fa;
+  }
+
+  .action-desc{
+    font-size:12.5px;
+    line-height:1.6;
+    color:var(--text-dim);
+    margin:0;
+  }
+
+  .action-arrow{
+    margin-top:auto;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    color:rgba(102,192,244,.72);
+    letter-spacing:.06em;
+    transition:color 200ms ease, transform 200ms ease;
+  }
+  .action-arrow svg{
+    width:13px; height:13px;
+    stroke:currentColor;
+    fill:none;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .action-card:hover .action-arrow,
+  .action-card:focus-visible .action-arrow{
+    color:var(--primary);
+    transform:translateX(3px);
+  }
+
+  /* 底部 */
+  .footer{
+    margin-top:52px;
+    font-size:12.5px;
+    color:var(--text-dim);
+    letter-spacing:.02em;
+  }
+  .footer .divider{
+    display:block;
+    width:120px;
+    height:1px;
+    margin:0 auto 20px;
+    background:linear-gradient(90deg,transparent,rgba(102,192,244,.28),transparent);
+  }
+  .footer a{
+    color:var(--text-dim);
+    text-decoration:underline;
+    text-decoration-color:rgba(143,152,160,.35);
+    text-underline-offset:4px;
+    transition:color 200ms ease, text-decoration-color 200ms ease;
+  }
+  .footer a:hover,
+  .footer a:focus-visible{
+    color:var(--primary);
+    text-decoration-color:var(--primary);
+    outline:none;
+  }
+
+  /* 响应式 */
+  @media (max-width:860px){
+    .actions{ grid-template-columns:1fr; gap:14px; }
+    .action-card{
+      flex-direction:row;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-start;
+      text-align:left;
+      min-height:0;
+      padding:18px 18px;
+      gap:8px 14px;
+    }
+    .icon-wrap{ flex:0 0 auto; }
+    .action-title{ flex:1 1 auto; }
+    .action-desc{ flex:1 1 100%; margin-left:66px; }
+    .action-arrow{ flex:1 1 100%; margin-left:66px; margin-top:2px; }
+    .subtitle{ margin-bottom:34px; }
+  }
+
+  @media (max-width:420px){
+    body{ padding:36px 16px; }
+    .action-desc, .action-arrow{ margin-left:0; }
+  }
+
+  /* 无障碍：减少动态效果 */
+  @media (prefers-reduced-motion: reduce){
+    .fade-in{
+      animation:none;
+      opacity:1;
+      transform:none;
+    }
+    .action-card,
+    .icon-wrap,
+    .action-arrow,
+    .footer a{
+      transition:none;
+    }
+    .action-card:hover,
+    .action-card:focus-visible{
+      transform:none;
+    }
+    .action-card:hover .action-arrow,
+    .action-card:focus-visible .action-arrow{
+      transform:none;
+    }
+  }
+    /* —— 需科学上网提示徽标 —— */
+    .action-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: .02em;
+      white-space: nowrap;
+      color: #e6d87f;
+      background: rgba(164, 208, 7, .10);
+      border: 1px solid rgba(164, 208, 7, .38);
+    }
+    .action-note svg {
+      width: 13px;
+      height: 13px;
+      flex: none;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* —— 轻提示 —— */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 34px;
+      transform: translate(-50%, 16px);
+      max-width: min(92vw, 560px);
+      padding: 13px 18px;
+      border-radius: 10px;
+      background: rgba(22, 27, 36, .97);
+      border: 1px solid rgba(102, 192, 244, .45);
+      box-shadow: 0 14px 38px rgba(0, 0, 0, .6), 0 0 22px rgba(102, 192, 244, .12);
+      color: #c6d4df;
+      font-size: 13.5px;
+      line-height: 1.55;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease, transform .22s ease;
+      z-index: 99;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    .toast b {
+      color: #66c0f4;
+      font-weight: 600;
+      letter-spacing: .01em;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .toast {
+        transition: none;
+      }
+    }
+</style>
+</head>
+<body>
+  <main class="stage">
+    <div class="fade-in d1">
+      <span class="eyebrow"><span class="dot"></span>Steam Learning Center</span>
+    </div>
+
+    <h1 class="fade-in d1">欢迎进入 Steam 学习中心</h1>
+
+    <p class="subtitle fade-in d2">
+      在这里完成 <strong>插件安装</strong> 与 <strong>内核配置</strong>，开启实验性能力，获得更顺畅的浏览体验。
+    </p>
+
+    <div class="actions">
+      <a class="action-card fade-in d2" href="https://chromewebstore.google.com/" target="_blank" rel="noopener noreferrer">
+        <span class="icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3v9"/>
+            <path d="M8.5 8.2 12 11.7l3.5-3.5"/>
+            <path d="M4.5 15.5v2.2A2.3 2.3 0 0 0 6.8 20h10.4a2.3 2.3 0 0 0 2.3-2.3v-2.2"/>
+          </svg>
+        </span>
+        <span class="action-title">安装插件</span>
+        <p class="action-desc">前往 Chrome 插件中心获取并安装扩展。</p>
+        <span class="action-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 8v5"/>
+            <path d="M12 16.2v.2"/>
+          </svg>
+          需要科学上网
+        </span>
+        <span class="action-arrow">前往插件中心
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+        </span>
+      </a>
+
+      <a class="action-card fade-in d3" href="chrome://settings" data-chrome-url="chrome://settings" role="button" tabindex="0" aria-label="内核设置，点击复制地址">
+        <span class="icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3.1"/>
+            <path d="M19.4 14.6a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.13a1.7 1.7 0 0 0-1.1-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.13a1.7 1.7 0 0 0 1.56-1.1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9.1A1.7 1.7 0 0 0 10.13 3.5V3a2 2 0 1 1 4 0v.13a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9.1a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.13a1.7 1.7 0 0 0-1.47 1.03Z"/>
+          </svg>
+        </span>
+        <span class="action-title">内核设置</span>
+        <p class="action-desc">打开浏览器设置，调整内核与基础参数。</p>
+        <span class="action-arrow">点击复制地址，粘贴到地址栏访问
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+        </span>
+      </a>
+
+      <a class="action-card fade-in d4" href="chrome://flags" data-chrome-url="chrome://flags" role="button" tabindex="0" aria-label="实验性功能，点击复制地址">
+        <span class="icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 3h6"/>
+            <path d="M10 3v6.2L5.6 17A2.2 2.2 0 0 0 7.5 20.3h9A2.2 2.2 0 0 0 18.4 17L14 9.2V3"/>
+            <path d="M7.6 14h8.8"/>
+          </svg>
+        </span>
+        <span class="action-title">实验性功能</span>
+        <p class="action-desc">进入 flags 页面，体验尚未正式发布的能力。</p>
+        <span class="action-arrow">点击复制地址，粘贴到地址栏访问
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+        </span>
+      </a>
+    </div>
+
+    <footer class="footer fade-in d4">
+      <span class="divider" aria-hidden="true"></span>
+      <a href="https://space.bilibili.com/3493086701292376?spm_id_from=333.337.0.0" target="_blank" rel="noopener noreferrer">bilibili:丰城孤人</a>
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      // 平滑点击反馈：仅做视觉层处理，不改变跳转行为
+      var cards = document.querySelectorAll('.action-card');
+      Array.prototype.forEach.call(cards, function (card) {
+        card.addEventListener('mousedown', function () {
+          card.style.transition = 'transform 90ms ease';
+          card.style.transform = 'translateY(-1px)';
+        });
+        card.addEventListener('mouseup', function () {
+          card.style.transition = '';
+          card.style.transform = '';
+        });
+        card.addEventListener('mouseleave', function () {
+          card.style.transition = '';
+          card.style.transform = '';
+        });
+      });
+    })();
+    /* chrome:// 地址复制 + 轻提示 */
+    (function () {
+      var toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.setAttribute('role', 'status');
+      toast.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toast);
+
+      var timer = null;
+      function showToast(html) {
+        toast.innerHTML = html;
+        toast.classList.add('show');
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          toast.classList.remove('show');
+        }, 3600);
+      }
+
+      function execCopy(text) {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.top = '-1000px';
+          ta.style.left = '-1000px';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          ta.setSelectionRange(0, ta.value.length);
+          var ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          return ok;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function copyText(text, done) {
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(function () {
+            done(true);
+          }, function () {
+            done(execCopy(text));
+          });
+        } else {
+          done(execCopy(text));
+        }
+      }
+
+      var targets = document.querySelectorAll('[data-chrome-url]');
+      Array.prototype.forEach.call(targets, function (el) {
+        function activate(ev) {
+          ev.preventDefault();
+          var url = el.getAttribute('data-chrome-url');
+          copyText(url, function (ok) {
+            showToast(
+              (ok ? '已复制 <b>' + url + '</b>' : '请手动复制 <b>' + url + '</b>') +
+              '，粘贴到 Chrome 地址栏回车即可打开（浏览器禁止网页直接跳转 chrome:// 地址）'
+            );
+          });
+        }
+        el.addEventListener('click', activate);
+        el.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') {
+            activate(ev);
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
